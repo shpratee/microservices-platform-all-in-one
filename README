@@ -1,0 +1,65 @@
+Minikube
+========
+alias m=minikube
+
+m start
+m stop
+m delete
+m config set vm-driver virtualbox
+m config set cpus 4    // 4 CPUs
+m config memory 10240  // 10 GB
+m dashboard
+eval $(minikube docker-env)
+m ssh
+m service developers-api -n developers-api --url
+
+Kubernetes
+==========
+alias k=kubectl
+
+k get nodes
+k describe node minikube
+k get po -o wide
+k patch svc developers-api --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+export POD=$(kubectl get pods --namespace hazelcast -l "app.kubernetes.io/name=hazelcast,role=hazelcast" -o jsonpath="{.items[0].metadata.name}")
+k port-forward --namespace hazelcast $POD 5701:5701
+kubectl exec hue-learn-5c9bb545d9-w8hrr -- printenv | grep HUE_REMINDERS_SERVICE
+kubectl get secret
+kubectl get secret hazelcast-service-account-token-6s94h -o jsonpath='{.data.token}' | base64 --decode | xargs echo
+kubectl get secret hazelcast-service-account-token-6s94h -o jsonpath='{.data.ca\.crt}' | base64 --decode
+kubectl logs hazelcast-0
+kubectl top
+kubectl create secret generic greeting-security \
+--from-literal=github.api.key.token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.\
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+
+Docker
+======
+docker ps --> running containers
+docker exec -it <CONTAINER_ID> curl -i http://localhost:8080/developers/hello
+docker exec -it <CONTAINER_ID> /bin/bash
+docker build -f src/main/docker/Dockerfile.jvm -t developers-api:1.0 .
+
+“curl $(minikube service getting-started --url)/developers”
+
+Helm
+====
+
+git clone https://github.com/hazelcast/charts.git
+helm search prometheus
+helm inspect values
+helm install stable/prometheus --name prometheus --values= /tmp/prometheus.values --namespace=prometheus
+helm repo update
+helm repo add hazelcast https://hazelcast-charts.s3.amazonaws.com/
+helm repo add hazelcast https://hazelcast-charts.s3.amazonaws.com/
+helm repo list
+helm install my-release --set hazelcast.licenseKey=$HAZELCAST_ENTERPRISE_LICENSE_KEY hazelcast/hazelcast-enterprise
+helm delete my-release
+helm install elasticsearch ./helm-charts/elasticsearch --set imageTag=8.0.0-SNAPSHOT
+helm repo add stable https://charts.helm.sh/stable
+helm show values prometheus-community/kube-prometheus-stack
+helm init --service-account tiller --wait
+helm del —-purge prometheus
+
+<service name>.<namespace>.svc.cluster.local

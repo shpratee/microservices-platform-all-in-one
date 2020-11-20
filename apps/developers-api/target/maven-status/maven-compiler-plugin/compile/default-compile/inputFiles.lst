@@ -1,0 +1,6 @@
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/model/Skill.java
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/model/Developer.java
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/service/HazelcastService.java
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/model/DeveloperServer.java
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/service/DeveloperService.java
+/Users/jelly/Documents/Projects/microservices-platform/apps/developers-api/src/main/java/com/demo/api/developers/DevelopersResource.java

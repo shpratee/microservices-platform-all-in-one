@@ -1,0 +1,6 @@
+com/demo/api/developers/service/HazelcastService.class
+com/demo/api/developers/model/DeveloperServer.class
+com/demo/api/developers/service/DeveloperService.class
+com/demo/api/developers/DevelopersResource.class
+com/demo/api/developers/model/Developer.class
+com/demo/api/developers/model/Skill.class

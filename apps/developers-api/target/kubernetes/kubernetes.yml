@@ -1,0 +1,127 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    app.quarkus.io/build-timestamp: 2020-11-20 - 00:07:46 +0000
+    prometheus.io/scrape: "true"
+  labels:
+    app.kubernetes.io/name: developers-api
+    app.kubernetes.io/version: "1.0"
+    app: developers-api
+    version: "1.0"
+  name: developers-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    app.quarkus.io/build-timestamp: 2020-11-20 - 00:07:46 +0000
+    prometheus.io/scrape: "true"
+  labels:
+    app.kubernetes.io/name: developers-api
+    app.kubernetes.io/version: "1.0"
+    app: developers-api
+    version: "1.0"
+  name: developers-api
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: developers-api
+    app.kubernetes.io/version: "1.0"
+  type: NodePort
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    app.quarkus.io/build-timestamp: 2020-11-20 - 00:07:46 +0000
+    prometheus.io/scrape: "true"
+  labels:
+    app.kubernetes.io/name: developers-api
+    app.kubernetes.io/version: "1.0"
+    app: developers-api
+    version: "1.0"
+  name: developers-api-view
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: developers-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    app.quarkus.io/build-timestamp: 2020-11-20 - 00:07:46 +0000
+    prometheus.io/scrape: "true"
+  labels:
+    app.kubernetes.io/name: developers-api
+    app.kubernetes.io/version: "1.0"
+    app: developers-api
+    version: "1.0"
+  name: developers-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: developers-api
+      app.kubernetes.io/version: "1.0"
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        app.quarkus.io/build-timestamp: 2020-11-20 - 00:07:46 +0000
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: developers-api
+        app.kubernetes.io/version: "1.0"
+        app: developers-api
+        version: "1.0"
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          value: developers-api
+        image: com.demo.api.developers/developers-api:1.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/live
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: developers-api
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+      serviceAccount: developers-api
