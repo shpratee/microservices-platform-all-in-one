@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 @Path("/developers")
 public class DevelopersResource {
@@ -77,7 +78,7 @@ public class DevelopersResource {
     @Path("/encrypt")
     @Produces(MediaType.TEXT_PLAIN)
     public String encrypt(@QueryParam("text") String text) {
-        String encryptedString = transit.encrypt("my_enryption", text);
+        String encryptedString = transit.encrypt("my_encryption", text);
         logger.info("Encrypted text -> "+encryptedString);
         return encryptedString;
     }
@@ -86,7 +87,7 @@ public class DevelopersResource {
     @Path("/decrypt")
     @Produces(MediaType.TEXT_PLAIN)
     public String decrypt(@QueryParam("text") String text) {
-        String decryptedString = transit.decrypt("my_enryption", text).asString();
+        String decryptedString = transit.decrypt("my_encryption", text).asString();
         logger.info("Decrypted text -> "+decryptedString);
         return decryptedString;
     }
@@ -102,14 +103,14 @@ public class DevelopersResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDevelopers() {
+    public Response getDevelopers() throws SQLException {
         return Response.ok().entity(service.getDevelopers()).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addDeveloper(Developer developer) {
+    public Response addDeveloper(Developer developer) throws SQLException {
         service.addDeveloper(developer);
 
         return Response.created(UriBuilder.fromResource(DevelopersResource.class).
@@ -119,7 +120,7 @@ public class DevelopersResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeveloper(@PathParam("id") String id) {
+    public Response getDeveloper(@PathParam("id") String id) throws SQLException {
         return Response.ok().entity(service.getDeveloper(id)).build();
     }
 

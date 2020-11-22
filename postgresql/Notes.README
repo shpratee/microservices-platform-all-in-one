@@ -1,0 +1,50 @@
+NOTES:
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed through Pgpool via port 5432 on the following DNS name from within your cluster:
+
+    postgresql-postgresql-ha-pgpool.postgresql.svc.cluster.local
+
+Pgpool acts as a load balancer for PostgreSQL and forward read/write connections to the primary node while read-only connections are forwarded to standby nodes.
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace postgresql postgresql-postgresql-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
+To get the password for "repmgr" run:
+
+    export REPMGR_PASSWORD=$(kubectl get secret --namespace postgresql postgresql-postgresql-ha-postgresql -o jsonpath="{.data.repmgr-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgresql-postgresql-ha-client --rm --tty -i --restart='Never' --namespace postgresql --image docker.io/bitnami/postgresql-repmgr:11.10.0-debian-10-r2 --env="PGPASSWORD=$POSTGRES_PASSWORD"  \
+        --command -- psql -h postgresql-postgresql-ha-pgpool -p 5432 -U postgres -d postgres
+
+To connect to your database from outside the cluster execute the following commands:
+
+    export NODE_IP=$(kubectl get nodes --namespace postgresql -o jsonpath="{.items[0].status.addresses[0].address}")
+    export NODE_PORT=$(kubectl get --namespace postgresql -o jsonpath="{.spec.ports[0].nodePort}" services postgresql-postgresql-ha-pgpool
+    PGPASSWORD="$POSTGRES_PASSWORD" psql -h $NODE_IP -p $NODE_PORT -U postgres -d postgres
+
+-=====================================
+vault kv put secret/developers-api/vault-kv/config foo=secretbar
+ 133 cat <<EOF | vault policy write vault-kv-policy -
+ 134 path "secret/data/developers-api/vault-service/*" {
+ 135  capabilities = ["read"]
+ 136 }
+ 137 EOF
+ 138 vault write -f transit/keys/my_encryption
+ 139 vault write transit/keys/my-sign-key type=ecdsa-p256
+ 140 cat <<EOF | vault policy write vault-transit-policy -
+ 141 path "transit/*" {
+ 142 capabilities = [ "create", "read", "update" ]
+ 143 }
+ 144 EOF
+ 145 vault write auth/userpass/users/jelly12 password=jelly12 policies="vault-transit-policy,vault-kv-policy"
+ 146 cat <<EOF | vault policy write vault-kv-policy -
+ 147 path "secret/data/developers-api/vault-kv/*" {
+ 148 capabilities = ["read"]
+ 149 }
+ 150 EOF
+ 151 vault write auth/userpass/users/jelly12 password=jelly12 policies="vault-transit-policy,vault-kv-policy"
+ 
