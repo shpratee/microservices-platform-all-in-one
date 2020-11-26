@@ -69,7 +69,7 @@ backend:
     tls_debug: 1
     shared_key:
   es:
-    host: elasticsearch-master.logging.svc.cluster.local
+    host: elasticsearch-master.observability.svc.cluster.local
     port: 9200
     # Elastic Index Name
     index: kubernetes_cluster

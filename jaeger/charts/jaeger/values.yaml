@@ -45,7 +45,7 @@ storage:
       # cassandra.tls.enabled: "false"
   elasticsearch:
     scheme: http
-    host: elasticsearch-master.logging.svc.cluster.local
+    host: elasticsearch-master.observability.svc.cluster.local
     port: 9200
     user: elastic
     usePassword: true
@@ -360,7 +360,7 @@ query:
   replicaCount: 1
   service:
     annotations: {}
-    type: ClusterIP
+    type: NodePort
     # List of IP ranges that are allowed to access the load balancer (if supported)
     loadBalancerSourceRanges: []
     port: 80

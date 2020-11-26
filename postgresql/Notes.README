@@ -33,6 +33,7 @@ vault kv put secret/developers-api/vault-kv/config foo=secretbar
  135  capabilities = ["read"]
  136 }
  137 EOF
+ vault secrets enable transit
  138 vault write -f transit/keys/my_encryption
  139 vault write transit/keys/my-sign-key type=ecdsa-p256
  140 cat <<EOF | vault policy write vault-transit-policy -
@@ -47,4 +48,4 @@ vault kv put secret/developers-api/vault-kv/config foo=secretbar
  149 }
  150 EOF
  151 vault write auth/userpass/users/jelly12 password=jelly12 policies="vault-transit-policy,vault-kv-policy"
- 
+ vault kv put secret/developers-api/vault-kv/db password=puK5ZFZ5pw
